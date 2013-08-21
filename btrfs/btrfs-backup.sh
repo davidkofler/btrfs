@@ -1,29 +1,38 @@
 #!/bin/bash
+################################
 # Incremental Backups with BTRFS
-DATADIR=/mnt/home
-BACKUPDIR=/mnt/backup/home
+# btrfs with send/receive patch
+# compiled from 
+# git://git.kernel.org/pub/scm/linux/kernel/git/mason/btrfs-progs.git
+# Date: 21.08.2013
+# Author: David Kofler
+################################
+# btrfs volume path
+DATAPATH=/mnt/data
+# Data subvolume which will be backuped
+SUBVOL=home
+# backup path where snapshots will be stored
+BACKUPDIR=/mnt/backup/$SUBVOL
 
-# create bootstrap backup
-if [ -d $DATADIR/BACKUP || -d $BACKUPDIR/BACKUP ] 
+if [ -d $DATAPATH/BACKUP -a -d $BACKUPDIR/BACKUP ] 
 then
-	./btrfs sub del $DATADIR/BACKUP
-	./btrfs sub del $BACKUPDIR/BACKUP
-	./btrfs sub snap -r $DATADIR $DATADIR/BACKUP
+	echo "Create incremental backup..."
+	# create incremental snapshot
+	./btrfs sub snap -r $DATAPATH/$SUBVOL $DATAPATH/BACKUP-new
 	sync
-	./btrfs send $DATADIR/BACKUP  | ./btrfs receive $BACKUPDIR
-
-else 
-
-
-# create incremental snapshot
-./btrfs sub snap -r $DATADIR $DATADIR/BACKUP-new
-sync
-./btrfs send -p $DATADIR/BACKUP $DATADIR/BACKUP-new | ./btrfs receive $BACKUPDIR
-
-# delete old snapshots
-./btrfs sub del $DATADIR/BACKUP
-mv $DATADIR/BACKUP-new $DATADIR/BACKUP
-./btrfs sub del $BACKUPDIR/BACKUP
-mv $BACKUPDIR/BACKUP-new $BACKUPDIR/BACKUP
-./btrfs sub snap -r $BACKUPDIR/BACKUP $BACKUPDIR.$(date +%Y-%m-%d)
+	./btrfs send -p $DATAPATH/BACKUP $DATAPATH/BACKUP-new | ./btrfs receive $BACKUPDIR
+	# save snapshot for history
+	./btrfs sub snap -r $BACKUPDIR/BACKUP $BACKUPDIR.$(date +%Y-%m-%d-%H-%M)
+	# delete old snapshot and replace it with backup-new
+	./btrfs sub del $DATAPATH/BACKUP
+	mv $DATAPATH/BACKUP-new $DATAPATH/BACKUP
+	./btrfs sub del $BACKUPDIR/BACKUP
+	mv $BACKUPDIR/BACKUP-new $BACKUPDIR/BACKUP
+else
+	echo "Create first backup..."
+#	./btrfs sub del $DATAPATH/BACKUP
+#	./btrfs sub del $BACKUPDIR/BACKUP
+	./btrfs sub snap -r $DATAPATH/$SUBVOL $DATAPATH/BACKUP
+	sync
+	./btrfs send $DATAPATH/BACKUP  | ./btrfs receive $BACKUPDIR 
 fi

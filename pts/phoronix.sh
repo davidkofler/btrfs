@@ -3,35 +3,36 @@
 # none
 partition=/dev/sda5
 mountpoint=/mnt
+configdir=/root/btrfs-test
 mount $partition $mountpoint
 cd $mountpoint
-phoronix-test-suite run dbench < /root/btrfs-test/dbench1
-phoronix-test-suite run iozone < /root/btrfs-test/iozone1
-phoronix-test-suite run fs-mark < /root/btrfs-test/fs-mark1
-phoronix-test-suite run fio < /root/btrfs-test/fio1
-phoronix-test-suite run compilebench < /root/btrfs-test/compilebench1
+phoronix-test-suite run dbench < $configdir/dbench1
+phoronix-test-suite run iozone < $configdir/iozone1
+phoronix-test-suite run fs-mark < $configdir/fs-mark1
+phoronix-test-suite run fio < $configdir/fio1
+phoronix-test-suite run compilebench < $configdir/compilebench1
 echo "test btrfs successfull"
 # lzo
-cd /root/btrfs-test
+cd $configdir
 umount $mountpoint
 mount -o compress=lzo $partition $mountpoint
 cd $mountpoint
-phoronix-test-suite run dbench < /root/btrfs-test/dbench2
-phoronix-test-suite run iozone < /root/btrfs-test/iozone2
-phoronix-test-suite run fs-mark < /root/btrfs-test/fs-mark2
-phoronix-test-suite run fio < /root/btrfs-test/fio2
-phoronix-test-suite run compilebench < /root/btrfs-test/compilebench2
+phoronix-test-suite run dbench < $configdir/dbench2
+phoronix-test-suite run iozone < $configdir/iozone2
+phoronix-test-suite run fs-mark < $configdir/fs-mark2
+phoronix-test-suite run fio < $configdir/fio2
+phoronix-test-suite run compilebench < $configdir/compilebench2
 echo "test btrfs-lzo successful"
 # zlib
-cd /root/btrfs-test
+cd $configdir
 umount $mountpoint
 mount -o compress=zlib $partition $mountpoint
 cd $mountpoint
-phoronix-test-suite run dbench < /root/btrfs-test/dbench3
-phoronix-test-suite run iozone < /root/btrfs-test/iozone3
-phoronix-test-suite run fs-mark < /root/btrfs-test/fs-mark3
-phoronix-test-suite run fio < /root/btrfs-test/fio3
-phoronix-test-suite run compilebench < /root/btrfs-test/compilebench3
+phoronix-test-suite run dbench < $configdir/dbench3
+phoronix-test-suite run iozone < $configdir/iozone3
+phoronix-test-suite run fs-mark < $configdir/fs-mark3
+phoronix-test-suite run fio < $configdir/fio3
+phoronix-test-suite run compilebench < $configdir/compilebench3
 echo "test btrfs-zlib successful"
-cd /root/btrfs-test
+cd $configdir
 umount $partition

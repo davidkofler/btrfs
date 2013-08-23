@@ -1,5 +1,5 @@
 #!/bin/bash
-# test disk speed with btrfs compression options
+# test disk performance with btrfs compression options
 # none
 partition=/dev/sda5
 mountpoint=/mnt

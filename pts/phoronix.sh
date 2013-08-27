@@ -5,6 +5,7 @@ partition=/dev/sda5
 mountpoint=/mnt
 configdir=/root/btrfs-test
 mount $partition $mountpoint
+phoronix-test-suite install dbench iozone fs-mark fio compilebench
 cd $mountpoint
 phoronix-test-suite run dbench < $configdir/dbench1
 phoronix-test-suite run iozone < $configdir/iozone1
